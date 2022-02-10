@@ -1,5 +1,5 @@
 numpy
 pandas
-opencv
+opencv-python
 tensorflow
 imageio
