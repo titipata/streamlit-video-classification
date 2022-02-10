@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import imageio
 import streamlit as st
-from utils import *
+from utils import get_sequence_model, sequence_prediction, build_feature_extractor
 
 # load sequence model
 MAX_SEQ_LENGTH = 120
@@ -21,7 +21,14 @@ def to_gif(frames, file_name="animation.gif"):
     imageio.mimsave(file_name, converted_images, fps=10)
 
 
+@st.cache
+def create_feature_extractor():
+    feature_extractor = build_feature_extractor()
+    return feature_extractor
+
+
 if uploaded_video is not None:
+    feature_extractor = create_feature_extractor()
     vid = uploaded_video.name
 
     st.markdown(
@@ -32,7 +39,7 @@ if uploaded_video is not None:
     with open(vid, mode="wb") as f:
         f.write(uploaded_video.read())  # save video to disk
 
-    frames, probabilities = sequence_prediction(vid, sequence_model)
+    frames, probabilities = sequence_prediction(vid, sequence_model, feature_extractor)
     to_gif(frames[:MAX_SEQ_LENGTH])  # save array to GIF
 
     # display GIF and write preidction output

@@ -91,9 +91,8 @@ def load_video(
         return np.array(frames)
 
 
-def prepare_single_video(frames: np.ndarray):
+def prepare_single_video(frames: np.ndarray, feature_extractor):
     """Prepare frame features and mask for sequence prediction"""
-    feature_extractor = build_feature_extractor()
     frames = frames[None, ...]
     frame_mask = np.zeros(
         shape=(
@@ -114,7 +113,7 @@ def prepare_single_video(frames: np.ndarray):
     return frame_features, frame_mask
 
 
-def sequence_prediction(path, sequence_model, verbose: bool = True):
+def sequence_prediction(path, sequence_model, feature_extractor, verbose: bool = True):
     """
     Predict exercise type of a given path to video
     Usage
@@ -127,7 +126,7 @@ def sequence_prediction(path, sequence_model, verbose: bool = True):
         return
     class_vocab = label_processor
     frames = load_video(path)
-    frame_features, frame_mask = prepare_single_video(frames)
+    frame_features, frame_mask = prepare_single_video(frames, feature_extractor)
     probabilities = sequence_model.predict([frame_features, frame_mask])[0]
 
     probabilities_dict = {}
