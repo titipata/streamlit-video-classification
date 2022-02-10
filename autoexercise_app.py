@@ -1,5 +1,6 @@
 import base64
 import numpy as np
+import pandas as pd
 import imageio
 import streamlit as st
 from utils import *
@@ -42,5 +43,7 @@ if uploaded_video is not None:
         unsafe_allow_html=True,
     )
     st.write("**Prediction**:\n")
+    # prob_df = pd.DataFrame(probabilities)
+
     for c, prob in probabilities.items():
         st.write(f"{c}: {prob * 100:.2f}%")
