@@ -22,10 +22,12 @@ def to_gif(frames, file_name="animation.gif"):
     imageio.mimsave(file_name, converted_images, fps=10)
 
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def create_feature_extractor():
     feature_extractor = build_feature_extractor()
     return feature_extractor
+
+
 feature_extractor = create_feature_extractor()
 
 
