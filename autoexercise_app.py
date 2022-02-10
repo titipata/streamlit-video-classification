@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import imageio
 import streamlit as st
+import plotly.express as px
 from utils import get_sequence_model, sequence_prediction, build_feature_extractor
 
 # load sequence model
@@ -11,7 +12,7 @@ MODEL_PATH = "sequence_model/"  # change this line to saved model path
 sequence_model = get_sequence_model(MODEL_PATH)
 
 st.title("Exercise classification")
-st.write("""Upload your video to predict the exercise type.""")
+st.write("""Upload your video to predict which exercise you are doing.""")
 uploaded_video = st.file_uploader("Choose an exercise video...", type=["mp4", "mov"])
 
 
@@ -25,12 +26,11 @@ def to_gif(frames, file_name="animation.gif"):
 def create_feature_extractor():
     feature_extractor = build_feature_extractor()
     return feature_extractor
+feature_extractor = create_feature_extractor()
 
 
 if uploaded_video is not None:
-    feature_extractor = create_feature_extractor()
     vid = uploaded_video.name
-
     st.markdown(
         f"File name: {vid}",
         unsafe_allow_html=True,
@@ -50,7 +50,12 @@ if uploaded_video is not None:
         unsafe_allow_html=True,
     )
     st.write("**Prediction**:\n")
-    # prob_df = pd.DataFrame(probabilities)
-
-    for c, prob in probabilities.items():
-        st.write(f"{c}: {prob * 100:.2f}%")
+    prob_df = pd.DataFrame(
+        list(probabilities.items()), columns=["Exercise", "Probability"]
+    )
+    pred_exercise = prob_df.sort_values(by="Probability", ascending=False)[
+        "Exercise"
+    ].iloc[0]
+    st.write(f"You are doing {pred_exercise}")
+    fig = px.bar(prob_df, x="Exercise", y="Probability", barmode="group", height=400)
+    st.plotly_chart(fig)
